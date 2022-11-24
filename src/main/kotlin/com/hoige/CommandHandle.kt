@@ -14,7 +14,7 @@ class CommandHandle {
     private fun regex(input: GroupMessageEvent): String {
         val set = input.message.contentToString()
         val rule = Regex("今天吃什么$").replace(set, "")
-        val kick = Regex("(#)|([)|(])|(\\s)").replace(rule,"")
+        val kick = Regex("(#)|([)|(])|(\\s)|(null)").replace(rule, "")
         if (rule.length >= maxCount) {
             return kick.substring(0, maxCount)
         }
