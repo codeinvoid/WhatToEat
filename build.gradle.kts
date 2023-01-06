@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.hoige"
-version = "0.1.0"
+version = "0.1.3"
 
 repositories {
     maven("https://maven.aliyun.com/repository/public")
