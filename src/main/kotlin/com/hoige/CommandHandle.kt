@@ -15,16 +15,16 @@ class CommandHandle {
         val set = input.message.contentToString()
         val rule = Regex("今天吃什么$").replace(set, "")
         val kick = Regex("(#)|([)|(])|(\\s)|(null)").replace(rule, "")
-        if (rule.length >= maxCount) {
+        if (rule.length >= maxCount)
             return kick.substring(0, maxCount)
-        }
         return kick
     }
 
     private fun getCurrentTimeStamp() : Boolean {
         val times = System.currentTimeMillis()
-        if ((times / 1000).toInt() - time >= delay) {
-            time = (times / 1000).toInt()
+        val count = 1000
+        if ((times / count).toInt() - time >= delay) {
+            time = (times / count).toInt()
             TimeCache.save()
             TimeCache.reload()
             return true
@@ -36,38 +36,25 @@ class CommandHandle {
         GlobalEventChannel
             .filterIsInstance<GroupMessageEvent>()
             .subscribeAlways<GroupMessageEvent> {
-                if (getCurrentTimeStamp()){
-                    if (regex(it) == "我" || regex(it) == "") {
-                        getContentQid(it)
-                    } else {
-                        getContent(it)
+                val content = regex(it)
+                val rule = Regex("(今天吃什么$)").containsMatchIn(it.message.contentToString())
+                if (getCurrentTimeStamp() && rule) { //正则匹配今天吃什么
+                    Food().getFood(content)
+                    when (regex(it) == "我" || regex(it) == "") {
+                        true -> sendContent(it, content, 0)
+                        false -> sendContent(it, content, 1)
                     }
                 }
-                return@subscribeAlways
+
+            }
+    }
+
+    private suspend fun sendContent(it: GroupMessageEvent, content: String, gex: Int) {
+        when (gex) {
+            1 -> it.group.sendMessage("${content}今天吃${type[cache.getValue(content)]} (${cache[content]})")
+            0 -> it.group.sendMessage("你今天吃${type[cache.getValue(content)]} (${cache[content]})")
         }
     }
 
-    private suspend fun getContent(it:GroupMessageEvent) {
-        if (Regex("(今天吃什么$)").containsMatchIn(it.message.contentToString())){ //正则匹配今天吃什么
-            val content = regex(it)
-            if (cache.containsKey(content)) {
-                it.group.sendMessage("${content}今天吃${type[cache.getValue(content)]} (${cache[content]})")
-            } else {
-                Food().getFood(content) //返回纯文本值 input:自定 #今天${input}吃什么
-                it.group.sendMessage("${content}今天吃${type[cache.getValue(content)]} (${cache[content]})")
-            }
-        }
-    }
 
-    private suspend fun getContentQid(it:GroupMessageEvent) {
-        if (Regex("(今天吃什么$)").containsMatchIn(it.message.contentToString())){ //正则匹配今天吃什么
-            val content = it.sender.id.toString()
-            if (cache.containsKey(content)) {
-                it.group.sendMessage("你今天吃${type[cache.getValue(content)]} (${cache[content]})")
-            } else {
-                Food().getFood(content) //返回纯文本值 input:自定 #今天${input}吃什么
-                it.group.sendMessage("你今天吃${type[cache.getValue(content)]} (${cache[content]})")
-            }
-        }
-    }
 }

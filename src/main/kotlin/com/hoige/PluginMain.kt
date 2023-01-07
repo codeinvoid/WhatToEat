@@ -1,8 +1,8 @@
 package com.hoige
 
+import kotlinx.coroutines.launch
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
-import kotlinx.coroutines.launch
 
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
@@ -18,6 +18,7 @@ object PluginMain : KotlinPlugin(
             CommandHandle().handle()
             ResetTime().getTime()
         }
+        //load config
         FoodCache.reload()
         FoodData.reload()
         Config.reload()
