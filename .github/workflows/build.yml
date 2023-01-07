@@ -1,8 +1,6 @@
-name: Run Gradle on PRs
+name: Auto Release
 on: 
   push:
-    branches:
-      - main
     tags:
       - 'v*'
 jobs:
