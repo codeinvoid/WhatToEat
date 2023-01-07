@@ -23,14 +23,10 @@ jobs:
     
     - name: Execute Gradle build
       run: ./gradlew buildPlugin
-      
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
     
     - uses: ncipollo/release-action@v1
       with:
         artifacts: "build/mirai/*"
-        bodyFile: "release.md"
+        bodyFile: "RELEASE.md"
         generateReleaseNotes: true
         token: ${{ secrets.GITHUB_TOKEN }}
-        
