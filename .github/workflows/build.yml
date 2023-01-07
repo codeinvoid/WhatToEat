@@ -1,0 +1,36 @@
+name: Run Gradle on PRs
+on: 
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+jobs:
+  gradle:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: 17
+        
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+    
+    - name: Execute Gradle build
+      run: ./gradlew buildPlugin
+      
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+    
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: "build/mirai/*"
+        bodyFile: "release.md"
+        generateReleaseNotes: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
